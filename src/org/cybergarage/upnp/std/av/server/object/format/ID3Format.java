@@ -17,6 +17,8 @@ package org.cybergarage.upnp.std.av.server.object.format;
 
 import java.io.*;
 
+import net.fengg.app.dlna.util.DLNAUtil;
+
 import org.cybergarage.upnp.std.av.server.object.*;
 import org.cybergarage.upnp.std.av.server.object.item.*;
 import org.cybergarage.xml.*;
@@ -238,7 +240,7 @@ public class ID3Format extends Header implements Format, FormatObject
 	
 	public String getMimeType()
 	{
-		return "audio/mpeg";
+		return DLNAUtil.getMimeType(".mp3");
 	}
 
 	public String getMediaClass()

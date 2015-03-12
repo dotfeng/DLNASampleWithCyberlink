@@ -17,6 +17,8 @@ package org.cybergarage.upnp.std.av.server.object.format;
 
 import java.io.*;
 
+import net.fengg.app.dlna.util.DLNAUtil;
+
 import org.cybergarage.upnp.std.av.server.object.*;
 
 public class PNGFormat extends ImageIOFormat
@@ -53,7 +55,7 @@ public class PNGFormat extends ImageIOFormat
 	
 	public String getMimeType()
 	{
-		return "image/png";
+		return DLNAUtil.getMimeType(".png");
 	}
 
 }

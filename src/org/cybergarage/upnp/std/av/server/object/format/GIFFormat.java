@@ -17,6 +17,8 @@ package org.cybergarage.upnp.std.av.server.object.format;
 
 import java.io.*;
 
+import net.fengg.app.dlna.util.DLNAUtil;
+
 import org.cybergarage.upnp.std.av.server.object.*;
 
 public class GIFFormat extends ImageIOFormat
@@ -57,7 +59,7 @@ public class GIFFormat extends ImageIOFormat
 	
 	public String getMimeType()
 	{
-		return "image/gif";
+		return DLNAUtil.getMimeType(".gif");
 	}
 
 }

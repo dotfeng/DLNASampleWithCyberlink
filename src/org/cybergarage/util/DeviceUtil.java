@@ -21,11 +21,9 @@ public class DeviceUtil {
 		return uuid;
 	}
 
-	private static SharedPreferences sharedPreferences;
-	
 	public static final String getFriendlyName(Context context, String device){
 		try {
-			sharedPreferences = context.getSharedPreferences(device, Context.MODE_PRIVATE);
+			SharedPreferences sharedPreferences = context.getSharedPreferences(device, Context.MODE_PRIVATE);
 			if(sharedPreferences.getString("friendlyName", "").isEmpty()) {
 				String friendlyName = Build.BRAND + " " + Build.MODEL +" " + device;
 				Editor editor = sharedPreferences.edit();
@@ -43,7 +41,7 @@ public class DeviceUtil {
 	}
 	
 	public static final String getUUID(Context context, String device) {
-		sharedPreferences = context.getSharedPreferences(device, Context.MODE_PRIVATE);
+		SharedPreferences sharedPreferences = context.getSharedPreferences(device, Context.MODE_PRIVATE);
 		if(sharedPreferences.getString("uuid", "").isEmpty()) {
 			String uuid = createUUID();
 			Editor editor = sharedPreferences.edit();

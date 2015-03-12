@@ -17,6 +17,8 @@ package org.cybergarage.upnp.std.av.server.object.format;
 
 import java.io.*;
 
+import net.fengg.app.dlna.util.DLNAUtil;
+
 import org.cybergarage.xml.*;
 import org.cybergarage.util.*;
 import org.cybergarage.upnp.std.av.server.object.*;
@@ -64,7 +66,7 @@ public class MPEGFormat implements Format, FormatObject
 	
 	public String getMimeType()
 	{
-		return "video/mpeg";
+		return DLNAUtil.getMimeType(".mpeg");
 	}
 
 	public String getMediaClass()

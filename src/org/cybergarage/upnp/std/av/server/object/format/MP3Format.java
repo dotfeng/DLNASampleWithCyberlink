@@ -17,6 +17,8 @@ package org.cybergarage.upnp.std.av.server.object.format;
 
 import java.io.*;
 
+import net.fengg.app.dlna.util.DLNAUtil;
+
 import org.cybergarage.xml.*;
 import org.cybergarage.util.*;
 import org.cybergarage.upnp.std.av.server.object.*;
@@ -64,12 +66,12 @@ public class MP3Format implements Format, FormatObject
 	
 	public String getMimeType()
 	{
-		return "audio/mp3";
+		return DLNAUtil.getMimeType(".mp3");
 	}
 
 	public String getMediaClass()
 	{
-		return "object.item.audioItem";
+		return "object.item.audioItem.musicTrack";
 	}
 	
 	public AttributeList getAttributeList()

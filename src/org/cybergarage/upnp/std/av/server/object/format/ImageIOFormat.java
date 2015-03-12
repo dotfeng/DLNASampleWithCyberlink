@@ -114,6 +114,10 @@ public abstract class ImageIOFormat extends Header implements Format, FormatObje
 		return title;
 	}
 	
+	public File getFile() {
+		return imgFile;
+	}
+	
 	public String getCreator()
 	{
 		return "";
