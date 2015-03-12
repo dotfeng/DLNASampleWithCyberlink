@@ -111,8 +111,6 @@ public class DLNAService extends Service {
 		if (mSearchThread != null) {
 			mSearchThread.stopThread();
 			mControlPoint.stop();
-			mSearchThread = null;
-			mControlPoint = null;
 			DebugLog.w("stop dlna service");
 		}
 	}

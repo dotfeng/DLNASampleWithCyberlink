@@ -7,7 +7,6 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import net.fengg.app.dlna.R;
 import net.fengg.app.dlna.adapter.DeviceListAdapter;
-import net.fengg.app.dlna.adapter.DlnaContentAdapter;
 import net.fengg.app.dlna.presenter.ControlPointContainer;
 import net.fengg.app.dlna.presenter.ControlPointContainer.DeviceChangeListener;
 import net.fengg.app.dlna.service.DLNAService;
@@ -22,7 +21,6 @@ import net.fengg.lib.tabsliding.TabSlidingView;
 import net.fengg.lib.tabsliding.ContentItem;
 import net.fengg.lib.tabsliding.TabSlidingView.TabContentProvider;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -35,13 +33,9 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
@@ -70,7 +64,6 @@ public class MainActivity extends BaseFragmentActivity {
 	@InjectView(R.id.iv_search_device)
 	protected ImageView iv_search_device;
 	protected ListView lv_devices;
-	protected Button btn_scan;
 	DeviceListAdapter deviceAdapter;
 	
 	
@@ -129,7 +122,7 @@ public class MainActivity extends BaseFragmentActivity {
 			LayoutInflater layoutInflater = LayoutInflater.from(this);
 			view = layoutInflater.inflate(R.layout.device_list,
 					rl_device_toolbar, false);
-			popupWindow = new PopupWindow(view, LayoutParams.MATCH_PARENT, Common.dp2px(this, 200));
+			popupWindow = new PopupWindow(view, LayoutParams.MATCH_PARENT, Common.dp2px(this, 260));
 			deviceAdapter = new DeviceListAdapter(this, ControlPointContainer.getInstance().getDevices(), Common.getImageLoader(this));
 			lv_devices = (ListView) view.findViewById(R.id.lv_devices);
 			lv_devices.setAdapter(deviceAdapter);
@@ -147,14 +140,6 @@ public class MainActivity extends BaseFragmentActivity {
 						popupWindow.dismiss();
 						openActivity(ShowDlnaActivity.class);
 					}
-				}
-			});
-			btn_scan = (Button) view.findViewById(R.id.btn_scan);
-			btn_scan.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-//					DLNAContainer.getInstance().searchDevices();
 				}
 			});
 			popupWindow.setFocusable(true);
