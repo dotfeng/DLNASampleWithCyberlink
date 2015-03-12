@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -21,6 +20,7 @@ import org.cybergarage.upnp.Device;
 import org.cybergarage.upnp.Service;
 import org.cybergarage.upnp.UPnPStatus;
 import org.cybergarage.upnp.std.av.renderer.AVTransport;
+import org.cybergarage.upnp.std.av.renderer.RenderingControl;
 import org.cybergarage.upnp.std.av.server.ContentDirectory;
 import org.cybergarage.upnp.std.av.server.DC;
 import org.cybergarage.upnp.std.av.server.UPnP;
@@ -40,9 +40,6 @@ public class ActionController {
 	public static ActionController getInstance() {
 		return mController;
 	}
-	
-	private static final String AVTransport1 = "urn:schemas-upnp-org:service:AVTransport:1";
-	private static final String RenderingControl = "urn:schemas-upnp-org:service:RenderingControl:1";
 
 	public boolean play(Device device, String path) {
 		if (device == null || !DLNAUtil.isMediaRenderer(device)) {
@@ -82,75 +79,84 @@ public class ActionController {
 	}
 
 	public boolean goon(Device device, String pausePosition) {
-
-		Service localService = device.getService(AVTransport1);
+		if (device == null || !DLNAUtil.isMediaRenderer(device)) {
+			return false;
+		}
+		
+		Service localService = device.getService(AVTransport.SERVICE_TYPE);
 		if (localService == null)
 			return false;
 
-		final Action localAction = localService.getAction("Seek");
+		Action localAction = localService.getAction(AVTransport.SEEK);
 		if (localAction == null)
 			return false;
-		localAction.setArgumentValue("InstanceID", "0");
+		localAction.setArgumentValue(AVTransport.INSTANCEID, "0");
 		// if (mUseRelTime) {
 		// } else {
 		// localAction.setArgumentValue("Unit", "ABS_TIME");
 		// }
 		// LogUtil.e(tag, "继续相对时间："+mUseRelTime);
 		// 测试解决播放暂停后时间不准确
-		localAction.setArgumentValue("Unit", "ABS_TIME");
-		localAction.setArgumentValue("Target", pausePosition);
+		localAction.setArgumentValue(AVTransport.UNIT, AVTransport.ABSTIME);
+		localAction.setArgumentValue(AVTransport.TARGET, pausePosition);
 		localAction.postControlAction();
 
-		Action playAction = localService.getAction("Play");
+		Action playAction = localService.getAction(AVTransport.PLAY);
 		if (playAction == null) {
 			return false;
 		}
 
-		playAction.setArgumentValue("InstanceID", 0);
-		playAction.setArgumentValue("Speed", "1");
+		playAction.setArgumentValue(AVTransport.INSTANCEID, 0);
+		playAction.setArgumentValue(AVTransport.SPEED, "1");
 		return playAction.postControlAction();
 	}
 
 	public String getTransportState(Device device) {
-		Service localService = device.getService(AVTransport1);
-		if (localService == null) {
+		if (device == null || !DLNAUtil.isMediaRenderer(device)) {
+			return null;
+		}
+		
+		Service service = device.getService(AVTransport.SERVICE_TYPE);
+		if (service == null)
+			return null;
+
+		Action action = service.getAction(AVTransport.GETTRANSPORTINFO);
+		if (action == null) {
 			return null;
 		}
 
-		final Action localAction = localService.getAction("GetTransportInfo");
-		if (localAction == null) {
-			return null;
-		}
+		action.setArgumentValue(AVTransport.INSTANCEID, "0");
 
-		localAction.setArgumentValue("InstanceID", "0");
-
-		if (localAction.postControlAction()) {
-			return localAction.getArgumentValue("CurrentTransportState");
+		if (action.postControlAction()) {
+			return action.getArgumentValue(AVTransport.CURRENTTRANSPORTSTATE);
 		} else {
 			return null;
 		}
 	}
 
 	public String getVolumeDbRange(Device device, String argument) {
-		Service localService = device.getService(RenderingControl);
-		if (localService == null) {
+		if (device == null || !DLNAUtil.isMediaRenderer(device)) {
 			return null;
 		}
-		Action localAction = localService.getAction("GetVolumeDBRange");
-		if (localAction == null) {
+		Service service = device.getService(RenderingControl.SERVICE_TYPE);
+		if (service == null) {
 			return null;
 		}
-		localAction.setArgumentValue("InstanceID", "0");
-		localAction.setArgumentValue("Channel", "Master");
-		if (!localAction.postControlAction()) {
+		Action action = service.getAction(RenderingControl.GETVOLUMEDBRANGE);
+		if (action == null) {
+			return null;
+		}
+		action.setArgumentValue(RenderingControl.INSTANCEID, "0");
+		action.setArgumentValue(RenderingControl.CHANNEL, RenderingControl.MASTER);
+		if (!action.postControlAction()) {
 			return null;
 		} else {
-			return localAction.getArgumentValue(argument);
+			return action.getArgumentValue(argument);
 		}
 	}
 
 	public int getMinVolumeValue(Device device) {
-		String minValue = getVolumeDbRange(device, "MinValue");
+		String minValue = getVolumeDbRange(device, RenderingControl.MINVALUE);
 		if (TextUtils.isEmpty(minValue)) {
 			return 0;
 		}
@@ -158,7 +164,7 @@ public class ActionController {
 	}
 
 	public int getMaxVolumeValue(Device device) {
-		String maxValue = getVolumeDbRange(device, "MaxValue");
+		String maxValue = getVolumeDbRange(device, RenderingControl.MAXVALUE);
 		if (TextUtils.isEmpty(maxValue)) {
 			return 100;
 		}
@@ -166,133 +172,158 @@ public class ActionController {
 	}
 
 	public boolean seek(Device device, String targetPosition) {
+		if (device == null || !DLNAUtil.isMediaRenderer(device)) {
+			return false;
+		}
 		Service localService = device.getService(AVTransport.SERVICE_TYPE);
 		if (localService == null)
 			return false;
 
-		Action localAction = localService.getAction(AVTransport.SEEK);
-		if (localAction == null) {
+		Action action = localService.getAction(AVTransport.SEEK);
+		if (action == null) {
 			return false;
 		}
-		localAction.setArgumentValue(AVTransport.INSTANCEID, "0");
-		localAction.setArgumentValue(AVTransport.UNIT, AVTransport.RELTIME);
-		localAction.setArgumentValue(AVTransport.TARGET, targetPosition);
+		action.setArgumentValue(AVTransport.INSTANCEID, "0");
+		action.setArgumentValue(AVTransport.UNIT, AVTransport.RELTIME);
+		action.setArgumentValue(AVTransport.TARGET, targetPosition);
 		
-		boolean postControlAction = localAction.postControlAction();
-		if (!postControlAction) {
-			localAction.setArgumentValue(AVTransport.UNIT, AVTransport.ABSTIME);
-			localAction.setArgumentValue(AVTransport.TARGET, targetPosition);
-			return localAction.postControlAction();
+		boolean result = action.postControlAction();
+		if (!result) {
+			action.setArgumentValue(AVTransport.UNIT, AVTransport.ABSTIME);
+			action.setArgumentValue(AVTransport.TARGET, targetPosition);
+			return action.postControlAction();
 		} else {
-			return postControlAction;
+			return result;
 		}
 
 	}
 
 	public String getPositionInfo(Device device) {
-		Service localService = device.getService(AVTransport1);
+		if (device == null || !DLNAUtil.isMediaRenderer(device)) {
+			return null;
+		}
+		Service service = device.getService(AVTransport.SERVICE_TYPE);
 
-		if (localService == null)
+		if (service == null)
 			return null;
 
-		final Action localAction = localService.getAction("GetPositionInfo");
-		if (localAction == null) {
+		Action action = service.getAction(AVTransport.GETPOSITIONINFO);
+		if (action == null) {
 			return null;
 		}
 
-		localAction.setArgumentValue("InstanceID", "0");
-		boolean isSuccess = localAction.postControlAction();
-		if (isSuccess) {
-			return localAction.getArgumentValue("AbsTime");
+		action.setArgumentValue(AVTransport.INSTANCEID, "0");
+		if (action.postControlAction()) {
+			return action.getArgumentValue(AVTransport.ABSTIME);
 		} else {
 			return null;
 		}
 	}
 
 	public String getMediaDuration(Device device) {
-		Service localService = device.getService(AVTransport1);
-		if (localService == null) {
+		if (device == null || !DLNAUtil.isMediaRenderer(device)) {
+			return null;
+		}
+		
+		Service service = device.getService(AVTransport.SERVICE_TYPE);
+		if (service == null) {
 			return null;
 		}
 
-		final Action localAction = localService.getAction("GetMediaInfo");
-		if (localAction == null) {
+		Action action = service.getAction(AVTransport.GETMEDIAINFO);
+		if (action == null) {
 			return null;
 		}
 
-		localAction.setArgumentValue("InstanceID", "0");
-		if (localAction.postControlAction()) {
-			return localAction.getArgumentValue("MediaDuration");
+		action.setArgumentValue(AVTransport.INSTANCEID, "0");
+		if (action.postControlAction()) {
+			return action.getArgumentValue(AVTransport.MEDIADURATION);
 		} else {
 			return null;
 		}
 
 	}
 
-	public boolean setMute(Device mediaRenderDevice, String targetValue) {
-		Service service = mediaRenderDevice.getService(RenderingControl);
+	public boolean setMute(Device device, String targetValue) {
+		if (device == null || !DLNAUtil.isMediaRenderer(device)) {
+			return false;
+		}
+		
+		Service service = device.getService(RenderingControl.SERVICE_TYPE);
 		if (service == null) {
 			return false;
 		}
-		final Action action = service.getAction("SetMute");
+		Action action = service.getAction(RenderingControl.SETMUTE);
 		if (action == null) {
 			return false;
 		}
 
-		action.setArgumentValue("InstanceID", "0");
-		action.setArgumentValue("Channel", "Master");
-		action.setArgumentValue("DesiredMute", targetValue);
+		action.setArgumentValue(RenderingControl.INSTANCEID, "0");
+		action.setArgumentValue(RenderingControl.CHANNEL, RenderingControl.MASTER);
+		action.setArgumentValue(RenderingControl.DESIREDMUTE, targetValue);
 		return action.postControlAction();
 	}
 
 	public String getMute(Device device) {
-		Service service = device.getService(RenderingControl);
+		if (device == null || !DLNAUtil.isMediaRenderer(device)) {
+			return null;
+		}
+		
+		Service service = device.getService(RenderingControl.SERVICE_TYPE);
 		if (service == null) {
 			return null;
 		}
 
-		final Action getAction = service.getAction("GetMute");
-		if (getAction == null) {
+		Action action = service.getAction(RenderingControl.GETMUTE);
+		if (action == null) {
 			return null;
 		}
-		getAction.setArgumentValue("InstanceID", "0");
-		getAction.setArgumentValue("Channel", "Master");
-		getAction.postControlAction();
-		return getAction.getArgumentValue("CurrentMute");
+		action.setArgumentValue(RenderingControl.INSTANCEID, "0");
+		action.setArgumentValue(RenderingControl.CHANNEL, RenderingControl.MASTER);
+		action.postControlAction();
+		return action.getArgumentValue(RenderingControl.CURRENTMUTE);
 	}
 
 	public boolean setVoice(Device device, int value) {
-		Service service = device.getService(RenderingControl);
+		if (device == null || !DLNAUtil.isMediaRenderer(device)) {
+			return false;
+		}
+		
+		Service service = device.getService(RenderingControl.SERVICE_TYPE);
 		if (service == null) {
 			return false;
 		}
 
-		final Action action = service.getAction("SetVolume");
+		Action action = service.getAction(RenderingControl.SETVOLUME);
 		if (action == null) {
 			return false;
 		}
 
-		action.setArgumentValue("InstanceID", "0");
-		action.setArgumentValue("Channel", "Master");
-		action.setArgumentValue("DesiredVolume", value);
+		action.setArgumentValue(RenderingControl.INSTANCEID, "0");
+		action.setArgumentValue(RenderingControl.CHANNEL, RenderingControl.MASTER);
+		action.setArgumentValue(RenderingControl.DESIREDVOLUME, value);
 		return action.postControlAction();
 
 	}
 
 	public int getVoice(Device device) {
-		Service service = device.getService(RenderingControl);
+		if (device == null || !DLNAUtil.isMediaRenderer(device)) {
+			return -1;
+		}
+		
+		Service service = device.getService(RenderingControl.SERVICE_TYPE);
 		if (service == null) {
 			return -1;
 		}
 
-		final Action getAction = service.getAction("GetVolume");
-		if (getAction == null) {
+		Action action = service.getAction(RenderingControl.GETVOLUME);
+		if (action == null) {
 			return -1;
 		}
-		getAction.setArgumentValue("InstanceID", "0");
-		getAction.setArgumentValue("Channel", "Master");
-		if (getAction.postControlAction()) {
-			return getAction.getArgumentIntegerValue("CurrentVolume");
+		action.setArgumentValue(RenderingControl.INSTANCEID, "0");
+		action.setArgumentValue(RenderingControl.CHANNEL, RenderingControl.MASTER);
+		if (action.postControlAction()) {
+			return action.getArgumentIntegerValue(RenderingControl.CURRENTVOLUME);
 		} else {
 			return -1;
 		}
@@ -300,38 +331,49 @@ public class ActionController {
 	}
 
 	public boolean stop(Device device) {
+		if (device == null || !DLNAUtil.isMediaRenderer(device)) {
+			return false;
+		}
+		
 		Service service = device.getService(AVTransport.SERVICE_TYPE);
 
 		if (service == null) {
 			return false;
 		}
-		final Action stopAction = service.getAction(AVTransport.STOP);
-		if (stopAction == null) {
+		Action action = service.getAction(AVTransport.STOP);
+		if (action == null) {
 			return false;
 		}
 
-		stopAction.setArgumentValue(AVTransport.INSTANCEID, 0);
-		return stopAction.postControlAction();
+		action.setArgumentValue(AVTransport.INSTANCEID, 0);
+		return action.postControlAction();
 
 	}
 
-	public boolean pause(Device mediaRenderDevice) {
-
-		Service service = mediaRenderDevice.getService(AVTransport.SERVICE_TYPE);
+	public boolean pause(Device device) {
+		if (device == null || !DLNAUtil.isMediaRenderer(device)) {
+			return false;
+		}
+		
+		Service service = device.getService(AVTransport.SERVICE_TYPE);
 		if (service == null) {
 			return false;
 		}
-		final Action pauseAction = service.getAction(AVTransport.PAUSE);
-		if (pauseAction == null) {
+		Action action = service.getAction(AVTransport.PAUSE);
+		if (action == null) {
 			return false;
 		}
-		pauseAction.setArgumentValue(AVTransport.INSTANCEID, 0);
-		return pauseAction.postControlAction();
+		action.setArgumentValue(AVTransport.INSTANCEID, 0);
+		return action.postControlAction();
 	}
 	
 	public List<ContentNode> browse(Device device, 
 			String id, String startingIndex, 
 			String requestedCount, String filter, String sortCriteria) {
+		if (device == null) {
+			return null;
+		}
+		
 		Service service = device.getService(ContentDirectory.SERVICE_TYPE);
 
 		if (service == null) {
@@ -340,23 +382,24 @@ public class ActionController {
 
 		Action action = service.getAction(ContentDirectory.BROWSE);
 		if (action == null) {
-			return null;	
+			return null;
 		}
-			ArgumentList argumentList = action.getArgumentList();
-			argumentList.getArgument(ContentDirectory.OBJECTID).setValue(id);
-			argumentList.getArgument(ContentDirectory.BROWSEFLAG).setValue(
-					ContentDirectory.BROWSEDIRECTCHILDREN);
-			argumentList.getArgument(ContentDirectory.STARTINGINDEX)
-				.setValue(startingIndex);
-			argumentList.getArgument(ContentDirectory.REQUESTEDCOUNT)
-				.setValue(requestedCount);
-			argumentList.getArgument(ContentDirectory.FILTER).setValue(filter);
-			argumentList.getArgument(ContentDirectory.SORTCRITERIA)
-				.setValue(sortCriteria);
+		ArgumentList argumentList = action.getArgumentList();
+		argumentList.getArgument(ContentDirectory.OBJECTID).setValue(id);
+		argumentList.getArgument(ContentDirectory.BROWSEFLAG).setValue(
+				ContentDirectory.BROWSEDIRECTCHILDREN);
+		argumentList.getArgument(ContentDirectory.STARTINGINDEX).setValue(
+				startingIndex);
+		argumentList.getArgument(ContentDirectory.REQUESTEDCOUNT).setValue(
+				requestedCount);
+		argumentList.getArgument(ContentDirectory.FILTER).setValue(filter);
+		argumentList.getArgument(ContentDirectory.SORTCRITERIA).setValue(
+				sortCriteria);
 		try {
 			if (action.postControlAction()) {
 				ArgumentList outArgList = action.getOutputArgumentList();
-				Argument result = outArgList.getArgument(ContentDirectory.RESULT);
+				Argument result = outArgList
+						.getArgument(ContentDirectory.RESULT);
 				System.out.println("Result:" + result.getValue());
 				return parseResult(result);
 			} else {
