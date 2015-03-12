@@ -1,0 +1,12 @@
+<resources>
+
+    <string name="app_name">DLNASample</string>
+
+    <string-array name="tabs">
+        <item>图片</item>
+        <item>视频</item>
+        <item>音乐</item>
+        <item>关于</item>
+    </string-array>
+    
+</resources>
