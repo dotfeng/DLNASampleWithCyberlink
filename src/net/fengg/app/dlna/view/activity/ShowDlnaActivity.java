@@ -1,7 +1,9 @@
 package net.fengg.app.dlna.view.activity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 import org.cybergarage.upnp.Device;
@@ -15,6 +17,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -24,6 +27,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.TextView;
 import net.fengg.app.dlna.R;
 import net.fengg.app.dlna.adapter.DlnaContentAdapter;
 import net.fengg.app.dlna.presenter.ActionController;
@@ -38,12 +42,16 @@ public class ShowDlnaActivity extends BaseActivity implements OnItemClickListene
 	protected PullToRefreshListView prl_file_list;
 	private ListView actualListView;
 	DlnaContentAdapter adapter;
+	@InjectView(R.id.tv_title)
+	protected TextView tv_title;
 	
 	List<ContentNode> contents = new ArrayList<ContentNode>();
 	private int startingIndex = 0;
 	private final int REQUESTED_COUNT = 10;
 	
 	private Stack<String> stack = new Stack<String>();
+	
+	private Map<String, String> titles = new HashMap<String, String>();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +63,8 @@ public class ShowDlnaActivity extends BaseActivity implements OnItemClickListene
 	}
 	
 	private void init() {
+		titles.put("0", ControlPointContainer.getInstance().getSelectedDevice().getFriendlyName());
+		tv_title.setText(titles.get("0"));
 		prl_file_list.setMode(Mode.BOTH);
 		prl_file_list.setOnRefreshListener(this);
 		actualListView = prl_file_list.getRefreshableView();
@@ -115,6 +125,8 @@ public class ShowDlnaActivity extends BaseActivity implements OnItemClickListene
 		ContentNode content = (ContentNode) parent.getItemAtPosition(position);
 		
 		if(DLNAUtil.isContainer(content)) {
+			titles.put(content.getID(), content.getTitle());
+			tv_title.setText(content.getTitle());
 			contents.clear();
 			startingIndex = 0;
 			adapter.notifyDataSetChanged();
@@ -149,6 +161,7 @@ public class ShowDlnaActivity extends BaseActivity implements OnItemClickListene
 				contents.clear();
 				startingIndex = 0;
 				adapter.notifyDataSetChanged();
+				tv_title.setText(titles.get(newLevel));
 				browse(newLevel);
 				return;
 			}
@@ -156,6 +169,11 @@ public class ShowDlnaActivity extends BaseActivity implements OnItemClickListene
 		super.onBackPressed();
 	}
 
+	@OnClick(R.id.tv_title)
+	protected void onTitle() {
+		onBackPressed();
+	}
+	
 	@Override
 	public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
 		String label = DateUtils.formatDateTime(

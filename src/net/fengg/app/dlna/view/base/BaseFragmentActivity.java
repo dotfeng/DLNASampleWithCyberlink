@@ -14,7 +14,6 @@ import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.WindowManager;
 import android.widget.Toast;
 
 
@@ -33,7 +32,6 @@ public class BaseFragmentActivity extends FragmentActivity  implements OnClickLi
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		AppManager.getAppManager().addActivity(this);
 		showBaseDialog();
 	}

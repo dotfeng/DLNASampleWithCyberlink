@@ -40,6 +40,18 @@ public class DeviceUtil {
 		}
 	}
 	
+	public static final void setFriendlyName(Context context, String device, String friendlyName){
+		try {
+			SharedPreferences sharedPreferences = context.getSharedPreferences(device, Context.MODE_PRIVATE);
+			Editor editor = sharedPreferences.edit();
+		    editor.putString("friendlyName", friendlyName);
+		    editor.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	public static final String getUUID(Context context, String device) {
 		SharedPreferences sharedPreferences = context.getSharedPreferences(device, Context.MODE_PRIVATE);
 		if(sharedPreferences.getString("uuid", "").isEmpty()) {

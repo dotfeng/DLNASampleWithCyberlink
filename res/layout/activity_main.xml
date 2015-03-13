@@ -33,7 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
-            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
             android:gravity="start|center_vertical"
             android:text="没有设备" />
 
@@ -44,7 +44,7 @@
             android:layout_margin="5dp"
             android:src="@drawable/device_not_connected"
             android:scaleType="fitXY"
-            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
              />
     </RelativeLayout>

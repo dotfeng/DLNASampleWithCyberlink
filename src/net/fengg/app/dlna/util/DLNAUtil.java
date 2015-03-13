@@ -146,4 +146,16 @@ public class DLNAUtil {
 		}
 		return content.getUPnPClass().startsWith(UPnP.OBJECT_ITEM_AUDIOITEM);
 	}
+	
+	public String getTitle(String url)
+	{
+		int idx = url.lastIndexOf(".");
+		int slant = url.lastIndexOf("/");
+		if (idx < 0)
+			idx = url.length();
+		if(slant < 0)
+			slant = 0;
+		String title = url.substring(slant, idx);
+		return title;
+	}
 }
