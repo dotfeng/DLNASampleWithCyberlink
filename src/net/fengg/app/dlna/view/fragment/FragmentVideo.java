@@ -1,5 +1,8 @@
 package net.fengg.app.dlna.view.fragment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
@@ -35,6 +38,7 @@ public class FragmentVideo extends BaseFragment implements OnItemClickListener {
 	
 	MainActivity mainActivity;
 	
+	List<Video> videos = new ArrayList<Video>();
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -42,6 +46,7 @@ public class FragmentVideo extends BaseFragment implements OnItemClickListener {
 		view=inflater.inflate(R.layout.activity_show_dlna, container, false);
 		ButterKnife.inject(this, view);
 		initView();
+		init();
 		return view;
 	}
 	
@@ -49,13 +54,43 @@ public class FragmentVideo extends BaseFragment implements OnItemClickListener {
 		prl_file_list.setMode(Mode.DISABLED);
 		actualListView = prl_file_list.getRefreshableView();
 		adapter = new VideoAdapter(getActivity(), 
-				FragmentVideoPre.getVideoFromSD(mainActivity), 
+				videos, 
 				Common.getImageLoader(mainActivity));
 		actualListView.setAdapter(adapter);
 		actualListView.setOnItemClickListener(this);
 	}
 	
 	public void init() {
+		new AsyncTask<String, Integer, Boolean>() {
+			@Override  
+	        protected void onPreExecute() { 
+				videos.clear();
+				showBaseDialog();
+	        } 
+			
+			@Override
+			protected Boolean doInBackground(String... params) {
+				videos.addAll(FragmentVideoPre.getVideoFromSD(mainActivity));
+				return true;
+			}
+			
+			@Override  
+	        protected void onProgressUpdate(Integer... progresses) {  
+				
+	        }  
+			
+			@Override  
+	        protected void onPostExecute(Boolean result) { 
+				adapter.notifyDataSetChanged();
+				cancelBaseDialog();
+	        }  
+	          
+	        @Override  
+	        protected void onCancelled() {
+	        	adapter.notifyDataSetChanged();
+				cancelBaseDialog();
+	        }  
+		}.execute("");
 	}
 	
 	

@@ -47,16 +47,43 @@ public class FragmentImage extends BaseFragment implements OnItemClickListener {
 	}
 	
 	public void initView(){
-		images = FragmentImagePre.getImageFromSD(mainActivity);
 		adapter = new ImageAdapter(getActivity(), images, Common.getImageLoader(mainActivity));
 		gv_picture.setAdapter(adapter);
 		gv_picture.setOnItemClickListener(this);
 	}
 	
 	public void init() {
-//		images = FragmentImagePre.getImageFromSD(mainActivity);
-//
-//		adapter.notifyDataSetChanged();
+		new AsyncTask<String, Integer, Boolean>() {
+			@Override  
+	        protected void onPreExecute() { 
+				images.clear();
+				showBaseDialog();
+	        } 
+			
+			@Override
+			protected Boolean doInBackground(String... params) {
+				//can not us images = ...
+				images.addAll(FragmentImagePre.getImageFromSD(mainActivity));
+				return true;
+			}
+			
+			@Override  
+	        protected void onProgressUpdate(Integer... progresses) {  
+				
+	        }  
+			
+			@Override  
+	        protected void onPostExecute(Boolean result) { 
+				adapter.notifyDataSetChanged();
+				cancelBaseDialog();
+	        }  
+	          
+	        @Override  
+	        protected void onCancelled() {
+	        	adapter.notifyDataSetChanged();
+				cancelBaseDialog();
+	        }  
+		}.execute("");
 	}
 	
 	@Override
