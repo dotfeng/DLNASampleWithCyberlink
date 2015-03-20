@@ -1,5 +1,4 @@
 # DLNA-Sample-With-Cyberlink
-DLNA-Sample-With-Cyberlink
 
 ![image](https://github.com/dotfeng/DLNASampleWithCyberlink/raw/master/screenshot.png)
 
