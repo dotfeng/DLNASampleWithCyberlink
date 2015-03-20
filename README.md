@@ -1,6 +1,8 @@
 # DLNA-Sample-With-Cyberlink
 DLNA-Sample-With-Cyberlink
 
+![image](https://github.com/dotfeng/DLNASampleWithCyberlink/raw/master/screenshot.png)
+
 sample MediaServer, MediaRenderer, ControlPoint
 
 modify some  bugs in cyberlink
