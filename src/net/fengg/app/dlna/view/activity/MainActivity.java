@@ -137,9 +137,9 @@ public class MainActivity extends BaseFragmentActivity {
 					if(DLNAUtil.isMediaRenderer(device)) {						
 						refresh();
 					}else if(DLNAUtil.isMediaServer(device)) {
-						popupWindow.dismiss();
 						openActivity(ShowDlnaActivity.class);
 					}
+					popupWindow.dismiss();
 				}
 			});
 			popupWindow.setFocusable(true);
