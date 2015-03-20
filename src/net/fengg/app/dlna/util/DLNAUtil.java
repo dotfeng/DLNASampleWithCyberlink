@@ -1,10 +1,7 @@
 package net.fengg.app.dlna.util;
 
 import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.net.URLEncoder;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 
@@ -14,7 +11,6 @@ import org.cybergarage.upnp.std.av.server.MediaServer;
 import org.cybergarage.upnp.std.av.server.UPnP;
 import org.cybergarage.upnp.std.av.server.object.ContentNode;
 import org.cybergarage.upnp.std.av.server.object.container.ContainerNode;
-import org.cybergarage.util.StringUtil;
 
 public class DLNAUtil {
 
@@ -76,42 +72,12 @@ public class DLNAUtil {
 	
 	public static String getUrl(String dir){
 		String url = null;
-		InetAddress inet=null;
 		if(dir.toLowerCase().startsWith("http://") || dir.toLowerCase().startsWith("https://"))
 			return dir;
 		
-		try {    
-			inet = InetAddress.getLocalHost();
-		      
-		} catch (Exception e) {    
-		    e.printStackTrace();    
-		}  
-		
-		boolean get = false;
-		String ipAdd = null;
-		Enumeration<NetworkInterface> netInterfaces = null;    
-		try {    
-		    netInterfaces = NetworkInterface.getNetworkInterfaces();    
-		    while (netInterfaces.hasMoreElements()) {    
-		        NetworkInterface ni = netInterfaces.nextElement();   
-		        Enumeration<InetAddress> ips = ni.getInetAddresses();    
-		        while (ips.hasMoreElements()) {    
-		            String  strtemp = ips.nextElement().getHostAddress();
-		        	
-		        	if(StringUtil.isIp(strtemp) && !strtemp.equals("127.0.0.1")){
-		        		ipAdd = strtemp;
-		            	get = true;
-		            	break;
-		        	}
-		        }  
-		        if(get)break;
-		    }    
-		} catch (Exception e) {    
-		    e.printStackTrace();    
-		}  
 		
 		try {
-			url = "http://"+ipAdd+":"+ MediaServer.DEFAULT_HTTP_PORT + "/local"+URLEncoder.encode(dir, "UTF-8")+"";
+			url = "http://"+NetUtil.getIp()+":"+ MediaServer.DEFAULT_HTTP_PORT + "/local"+URLEncoder.encode(dir, "UTF-8")+"";
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

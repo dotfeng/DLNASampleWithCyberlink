@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center" >
+
+  <ToggleButton
+      android:id="@+id/tb_server"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textOff="文件服务器停止"
+      android:textOn="文件服务器开启" />
+  <TextView 
+      android:id="@+id/tv_tips"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:visibility="invisible"
+      android:gravity="center"
+      android:text="提示"
+      />
+
+</LinearLayout>

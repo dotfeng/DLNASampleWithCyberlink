@@ -1,35 +1,112 @@
 package net.fengg.app.dlna.view.fragment;
 
+import fi.iki.elonen.SimpleWebServer;
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import net.fengg.app.dlna.R;
+import net.fengg.app.dlna.util.NetUtil;
+import net.fengg.app.dlna.view.activity.MainActivity;
+import net.fengg.app.dlna.view.base.BaseFragment;
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
-import android.view.Gravity;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
-import android.widget.FrameLayout.LayoutParams;
+import android.widget.ToggleButton;
 
-public class FragmentAbout extends Fragment {
+public class FragmentAbout extends BaseFragment implements OnCheckedChangeListener {
+	View view;
+	
+	MainActivity mainActivity;
+	
+	@InjectView(R.id.tb_server)
+	protected ToggleButton tb_server;
+	
+	@InjectView(R.id.tv_tips)
+	protected TextView tv_tips;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-		FrameLayout fl = new FrameLayout(getActivity());
-		fl.setLayoutParams(params);
-		DisplayMetrics dm = getResources().getDisplayMetrics();
-		final int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, dm);
-		TextView v = new TextView(getActivity());
-		params.setMargins(margin, margin, margin, margin);
-		v.setLayoutParams(params);
-		v.setLayoutParams(params);
-		v.setGravity(Gravity.CENTER);
-		v.setText(getResources().getString(R.string.app_name));
-		v.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, dm));
-		fl.addView(v);
-		return fl;
+		view=inflater.inflate(R.layout.fragment_about, container, false);
+		ButterKnife.inject(this, view);
+		initView();
+		init();
+		return view;
+	}
+	
+	public void initView(){
+		tb_server.setOnCheckedChangeListener(this);
+	}
+	
+	public void init() {
+		
+	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		cancelBaseDialog();
+	}
+
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		this.mainActivity = (MainActivity) activity;
+	}
+
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onActivityCreated(savedInstanceState);
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+	}
+
+	@Override
+	public void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+	}
+
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		ButterKnife.reset(this);
+	}
+
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+	}
+
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onViewCreated(view, savedInstanceState);
+	}
+
+	@Override
+	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+		if(isChecked) {
+			String ip = NetUtil.getIp();
+			int port = 9999;
+			SimpleWebServer.startServer(ip, port, 
+					Environment.getExternalStorageDirectory().getPath());
+			tv_tips.setVisibility(View.VISIBLE);
+			tv_tips.setText("请在电脑浏览器地址栏输入：\n" + "http://" + ip + ":" + port);
+		}else{
+			SimpleWebServer.stopServer();
+			tv_tips.setVisibility(View.INVISIBLE);
+		}
 	}
 }
