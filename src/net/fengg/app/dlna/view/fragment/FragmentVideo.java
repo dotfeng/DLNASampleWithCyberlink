@@ -156,8 +156,8 @@ public class FragmentVideo extends BaseFragment implements OnItemClickListener {
 		new AsyncTask<String, Integer, Boolean>() {
 			@Override  
 	        protected void onPreExecute() {  
+				showBaseDialog();
 	        } 
-			
 			
 			@Override
 			protected Boolean doInBackground(String... params) {
@@ -172,6 +172,7 @@ public class FragmentVideo extends BaseFragment implements OnItemClickListener {
 			
 			@Override  
 	        protected void onPostExecute(Boolean result) {  
+				cancelBaseDialog();
 				if (result) {
 					showShortToast("播放成功");
 				}else {
@@ -181,6 +182,7 @@ public class FragmentVideo extends BaseFragment implements OnItemClickListener {
 	          
 	        @Override  
 	        protected void onCancelled() {  
+	        	cancelBaseDialog();
 	        }  
 		}.execute(path);
 	}

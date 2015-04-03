@@ -156,7 +156,7 @@ public class Common {
 					.bitmapConfig(Bitmap.Config.RGB_565)
 					.build();
 			ImageLoaderConfiguration config 
-				= new ImageLoaderConfiguration.Builder(context)
+				= new ImageLoaderConfiguration.Builder(context.getApplicationContext())
 					.defaultDisplayImageOptions(defaultOptions)
 					.memoryCache(new WeakMemoryCache())
 					.build();

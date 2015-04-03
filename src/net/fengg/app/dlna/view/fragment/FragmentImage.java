@@ -62,7 +62,7 @@ public class FragmentImage extends BaseFragment implements OnItemClickListener {
 			
 			@Override
 			protected Boolean doInBackground(String... params) {
-				//can not us images = ...
+				//can not use images = ...
 				images.addAll(FragmentImagePre.getImageFromSD(mainActivity));
 				return true;
 			}
@@ -147,9 +147,9 @@ public class FragmentImage extends BaseFragment implements OnItemClickListener {
 	private void play(String path) {
 		new AsyncTask<String, Integer, Boolean>() {
 			@Override  
-	        protected void onPreExecute() {  
+	        protected void onPreExecute() {
+				showBaseDialog();
 	        } 
-			
 			
 			@Override
 			protected Boolean doInBackground(String... params) {
@@ -163,7 +163,8 @@ public class FragmentImage extends BaseFragment implements OnItemClickListener {
 	        }  
 			
 			@Override  
-	        protected void onPostExecute(Boolean result) {  
+	        protected void onPostExecute(Boolean result) {
+				cancelBaseDialog();
 				if (result) {
 					showShortToast("播放成功");
 				}else {
@@ -172,7 +173,8 @@ public class FragmentImage extends BaseFragment implements OnItemClickListener {
 	        }  
 	          
 	        @Override  
-	        protected void onCancelled() {  
+	        protected void onCancelled() { 
+	        	cancelBaseDialog();
 	        }  
 		}.execute(path);
 	}
