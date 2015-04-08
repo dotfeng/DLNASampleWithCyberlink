@@ -7,6 +7,4 @@
     android:scaleType="fitCenter"
     android:contentDescription="@string/app_name"
      >
-    
-
 </ImageView>

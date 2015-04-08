@@ -16,10 +16,7 @@ public class ServerRunner {
             server.start();
         } catch (IOException ioe) {
             System.err.println("Couldn't start server:\n" + ioe);
-            System.exit(-1);
         }
-
-        System.out.println("Server started, Hit Enter to stop.\n");
     }
     
     public static void stopInstance(NanoHTTPD server) {

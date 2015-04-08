@@ -18,7 +18,7 @@ public class ShowImageActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.show_image);
+		setContentView(R.layout.activity_show_image);
 		ButterKnife.inject(this);
 		init();
 		cancelBaseDialog();

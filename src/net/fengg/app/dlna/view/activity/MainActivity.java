@@ -14,7 +14,7 @@ import net.fengg.app.dlna.util.Common;
 import net.fengg.app.dlna.util.DLNAUtil;
 import net.fengg.app.dlna.view.base.BaseFragmentActivity;
 import net.fengg.app.dlna.view.fragment.FragmentImage;
-import net.fengg.app.dlna.view.fragment.FragmentAbout;
+import net.fengg.app.dlna.view.fragment.FragmentFile;
 import net.fengg.app.dlna.view.fragment.FragmentVideo;
 import net.fengg.app.dlna.view.fragment.FragmentAudio;
 import net.fengg.lib.tabsliding.TabSlidingView;
@@ -48,7 +48,7 @@ public class MainActivity extends BaseFragmentActivity {
 	private FragmentImage fragmentImage;
 	private FragmentVideo fragmentVideo;
 	private FragmentAudio fragmentAudio;
-	private FragmentAbout fragmentAbout;
+	private FragmentFile fragmentAbout;
 
 	private DisplayMetrics dm;
 	private PopupWindow popupWindow;
@@ -120,7 +120,7 @@ public class MainActivity extends BaseFragmentActivity {
 		View view;
 		if (popupWindow == null) {
 			LayoutInflater layoutInflater = LayoutInflater.from(this);
-			view = layoutInflater.inflate(R.layout.device_list,
+			view = layoutInflater.inflate(R.layout.pop_device_list,
 					rl_device_toolbar, false);
 			popupWindow = new PopupWindow(view, LayoutParams.MATCH_PARENT, Common.dp2px(this, 260));
 			deviceAdapter = new DeviceListAdapter(this, ControlPointContainer.getInstance().getDevices(), Common.getImageLoader(this));
@@ -211,7 +211,7 @@ public class MainActivity extends BaseFragmentActivity {
 				return fragmentAudio;
 			case 3:
 				if (fragmentAbout == null) {
-					fragmentAbout = new FragmentAbout();
+					fragmentAbout = new FragmentFile();
 				}
 				return fragmentAbout;
 			default:

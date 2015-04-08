@@ -18,7 +18,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-public class FragmentAbout extends BaseFragment implements OnCheckedChangeListener {
+public class FragmentFile extends BaseFragment implements OnCheckedChangeListener {
 	View view;
 	
 	MainActivity mainActivity;
@@ -32,7 +32,7 @@ public class FragmentAbout extends BaseFragment implements OnCheckedChangeListen
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		view=inflater.inflate(R.layout.fragment_about, container, false);
+		view=inflater.inflate(R.layout.fragment_file, container, false);
 		ButterKnife.inject(this, view);
 		initView();
 		init();

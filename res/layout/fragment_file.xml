@@ -9,6 +9,9 @@
       android:id="@+id/tb_server"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
+      android:background="@android:color/transparent"
+      android:button="@drawable/toggle_btn"
+      android:checked="false"
       android:textOff="文件服务器停止"
       android:textOn="文件服务器开启" />
   <TextView 
