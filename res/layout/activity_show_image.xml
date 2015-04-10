@@ -14,7 +14,7 @@
         android:id="@+id/tv_image_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/transparent"
+        android:background="@android:color/transparent"
         android:paddingLeft="15dp"
         android:textSize="15sp" />
 

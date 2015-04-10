@@ -17,9 +17,10 @@ import net.fengg.app.dlna.view.fragment.FragmentImage;
 import net.fengg.app.dlna.view.fragment.FragmentFile;
 import net.fengg.app.dlna.view.fragment.FragmentVideo;
 import net.fengg.app.dlna.view.fragment.FragmentAudio;
-import net.fengg.lib.tabsliding.TabSlidingView;
-import net.fengg.lib.tabsliding.ContentItem;
-import net.fengg.lib.tabsliding.TabSlidingView.TabContentProvider;
+import net.fengg.tabviewpagerindicator.lib.ContentItem;
+import net.fengg.tabviewpagerindicator.lib.SimpleViewPagerIndicator;
+import net.fengg.tabviewpagerindicator.lib.TabSlidingView;
+import net.fengg.tabviewpagerindicator.lib.TabSlidingView.TabContentProvider;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -52,11 +53,12 @@ public class MainActivity extends BaseFragmentActivity {
 
 	private DisplayMetrics dm;
 	private PopupWindow popupWindow;
-	private MyPagerAdapter adapter;
-	@InjectView(R.id.tabs)
-	protected TabSlidingView tabs;
-	@InjectView(R.id.pager)
-	protected ViewPager pager;
+	private MyPagerAdapter mAdapter;
+	@InjectView(R.id.id_indicator)
+//	protected TabSlidingView mIndicator;
+	protected SimpleViewPagerIndicator mIndicator;
+	@InjectView(R.id.id_viewpager)
+	protected ViewPager mViewPager;
 	@InjectView(R.id.rl_device_toolbar)
 	protected RelativeLayout rl_device_toolbar;
 	@InjectView(R.id.tv_no_device)
@@ -79,9 +81,12 @@ public class MainActivity extends BaseFragmentActivity {
 
 	private void initView() {
 		dm = getResources().getDisplayMetrics();
-		adapter=new MyPagerAdapter(getSupportFragmentManager());
-		pager.setAdapter(adapter);
-		tabs.setViewPager(pager);
+		mAdapter=new MyPagerAdapter(getSupportFragmentManager());
+		mViewPager.setAdapter(mAdapter);
+//		mIndicator.setViewPager(mViewPager);
+		mIndicator.setViewPager(mViewPager, 0);
+		mIndicator.setTitles(getResources().getStringArray(R.array.tabs));
+		
 		setTabsValue();
 		ControlPointContainer.getInstance().setDeviceChangeListener(
 				new DeviceChangeListener() {
@@ -148,31 +153,30 @@ public class MainActivity extends BaseFragmentActivity {
 			popupWindow.setBackgroundDrawable(new BitmapDrawable(getResources(), (Bitmap)null));
 		}
 //		popupWindow.showAsDropDown(pager, 0, 0);
-		 popupWindow.showAtLocation(pager, Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, Common.dp2px(this, 60));
+		 popupWindow.showAtLocation(mViewPager, Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, Common.dp2px(this, 60));
 	}
 	
 	private void setTabsValue() {
 		// 设置Tab是自动填充满屏幕的
-		tabs.setShouldExpand(true);
+		/*mIndicator.setShouldExpand(true);
 		// 设置Tab的分割线是透明的
 //		tabs.setDividerColor(Color.TRANSPARENT);
 		// 设置Tab底部线的高度
-		tabs.setUnderlineHeight((int) TypedValue.applyDimension(
+		mIndicator.setUnderlineHeight((int) TypedValue.applyDimension(
 				TypedValue.COMPLEX_UNIT_DIP, 1, dm));
 		// 设置Tab Indicator的高度
-		tabs.setIndicatorHeight((int) TypedValue.applyDimension(
+		mIndicator.setIndicatorHeight((int) TypedValue.applyDimension(
 				TypedValue.COMPLEX_UNIT_DIP, 2, dm));
 		// 设置Tab标题文字的大小
-		tabs.setTextSize((int) TypedValue.applyDimension(
+		mIndicator.setTextSize((int) TypedValue.applyDimension(
 				TypedValue.COMPLEX_UNIT_SP, 15, dm));
 		// 设置Tab Indicator的颜色
-		tabs.setIndicatorColor(getResources().getColor(R.color.tab_green));
-		tabs.setUnderlineColor(getResources().getColor(R.color.tab_green));
-		tabs.setTabBackground(0);
-		tabs.setIconAbove(true);
+		mIndicator.setIndicatorColor(getResources().getColor(R.color.tab_green));
+		mIndicator.setUnderlineColor(getResources().getColor(R.color.tab_green));
+		mIndicator.setTabBackground(0);
+		mIndicator.setIconAbove(true);
 		//设置指示在上部
-		tabs.setIndicatorBelow(true);
-
+		mIndicator.setIndicatorBelow(true);*/
 	}
 
 	public class MyPagerAdapter extends FragmentPagerAdapter implements TabContentProvider{
