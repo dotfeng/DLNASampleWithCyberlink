@@ -1,6 +1,6 @@
 # DLNA-Sample-With-Cyberlink
 
-![image](https://github.com/dotfeng/DLNASampleWithCyberlink/raw/master/screenshot.png)
+![image](screenshot.png)
 
 sample MediaServer, MediaRenderer, ControlPoint
 
