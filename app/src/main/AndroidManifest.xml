@@ -1,0 +1,48 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="net.fengg.app.dlna">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <application
+        android:name=".AppApplication"
+        android:allowBackup="true"
+        tools:replace="android:icon,android:theme"
+        android:icon="@drawable/logo"
+        android:label="@string/app_name"
+        android:theme="@style/MyTheme" >
+        <activity
+            android:name=".view.activity.MainActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".view.activity.ShowDlnaActivity" />
+        <activity
+            android:name=".view.activity.ShowImageActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:mimeType="image/*"
+                    android:scheme="http" />
+                <data
+                    android:mimeType="image/*"
+                    android:scheme="file" />
+                <data
+                    android:mimeType="image/*"
+                    android:scheme="content" />
+            </intent-filter>
+        </activity>
+
+        <service android:name="net.fengg.app.dlna.service.DLNAService" >
+        </service>
+    </application>
+
+</manifest>

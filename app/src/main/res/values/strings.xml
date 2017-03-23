@@ -1,0 +1,15 @@
+<resources>
+
+    <string name="app_name">DLNASample</string>
+	<string name="text_off">文件服务器停止</string>
+    <string name="text_on">文件服务器开启</string>
+    <string name="input">请在电脑浏览器地址栏输入：</string>
+    <string name="error">获取地址失败</string>
+    <string-array name="tabs">
+        <item>图片</item>
+        <item>视频</item>
+        <item>音乐</item>
+        <item>文件</item>
+    </string-array>
+    
+</resources>
