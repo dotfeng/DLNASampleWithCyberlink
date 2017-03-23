@@ -27,7 +27,7 @@ public class HelloServer extends NanoHTTPD {
 
         msg += "</body></html>\n";
 
-        return new NanoHTTPD.Response(msg);
+        return new Response(msg);
     }
 
 

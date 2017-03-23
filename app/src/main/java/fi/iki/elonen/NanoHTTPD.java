@@ -583,7 +583,7 @@ public abstract class NanoHTTPD {
             this.mimeType = mimeType;
             try {
                 this.data = txt != null ? new ByteArrayInputStream(txt.getBytes("UTF-8")) : null;
-            } catch (java.io.UnsupportedEncodingException uee) {
+            } catch (UnsupportedEncodingException uee) {
                 uee.printStackTrace();
             }
         }

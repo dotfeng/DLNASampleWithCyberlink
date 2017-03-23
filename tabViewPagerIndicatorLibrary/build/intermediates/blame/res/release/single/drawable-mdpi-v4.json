@@ -1,5 +1,9 @@
 [
     {
+        "merged": "F:\\GitHub\\DLNASampleWithCyberlink\\tabViewPagerIndicatorLibrary\\build\\intermediates\\res\\merged\\release\\drawable-mdpi-v4\\ic_launcher.png",
+        "source": "F:\\GitHub\\DLNASampleWithCyberlink\\tabViewPagerIndicatorLibrary\\src\\main\\res\\drawable-mdpi\\ic_launcher.png"
+    },
+    {
         "merged": "F:\\lin\\DLNASampleWithCyberlink\\tabViewPagerIndicatorLibrary\\build\\intermediates\\res\\merged\\release\\drawable-mdpi-v4\\ic_launcher.png",
         "source": "F:\\lin\\DLNASampleWithCyberlink\\tabViewPagerIndicatorLibrary\\src\\main\\res\\drawable-mdpi\\ic_launcher.png"
     }

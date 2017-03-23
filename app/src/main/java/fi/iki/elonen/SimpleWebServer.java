@@ -6,18 +6,22 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import net.fengg.app.dlna.util.NetUtil;
 import android.os.Environment;
 
 public class SimpleWebServer extends NanoHTTPD {
@@ -92,7 +96,7 @@ public class SimpleWebServer extends NanoHTTPD {
             + "(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\n"
             + "OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
     private static Map<String, WebServerPlugin> mimeTypeHandlers = new HashMap<String, WebServerPlugin>();
-    private final List<File> rootDirs;
+    private static List<File> rootDirs;
     private final boolean quiet;
 
     public static SimpleWebServer instance;
@@ -123,36 +127,17 @@ public class SimpleWebServer extends NanoHTTPD {
     /**
      * Starts as a standalone file server and waits for Enter.
      */
-    public static void startServer(String host, int port, String wwwroot) {
+    public static void startServer(String host, int port, String[] paths) {
         // Defaults
         List<File> rootDirs = new ArrayList<File>();
         boolean quiet = false;
         Map<String, String> options = new HashMap<String, String>();
 
-        // Parse command-line, with short and long versions of the options.
-//        for (int i = 0; i < args.length; ++i) {
-//            if (args[i].equalsIgnoreCase("-h") || args[i].equalsIgnoreCase("--host")) {
-//                host = args[i + 1];
-//            } else if (args[i].equalsIgnoreCase("-p") || args[i].equalsIgnoreCase("--port")) {
-//                port = Integer.parseInt(args[i + 1]);
-//            } else if (args[i].equalsIgnoreCase("-q") || args[i].equalsIgnoreCase("--quiet")) {
-//                quiet = true;
-//            } else if (args[i].equalsIgnoreCase("-d") || args[i].equalsIgnoreCase("--dir")) {
-//                rootDirs.add(new File(args[i + 1]).getAbsoluteFile());
-//            } else if (args[i].equalsIgnoreCase("--licence")) {
-//                System.out.println(LICENCE + "\n");
-//            } else if (args[i].startsWith("-X:")) {
-//                int dot = args[i].indexOf('=');
-//                if (dot > 0) {
-//                    String name = args[i].substring(0, dot);
-//                    String value = args[i].substring(dot + 1, args[i].length());
-//                    options.put(name, value);
-//                }
-//            }
-//        }
-
-        if (rootDirs.isEmpty()) {
-            rootDirs.add(new File(wwwroot).getAbsoluteFile());
+        for(String path : paths) {
+            File file = new File(path).getAbsoluteFile();
+            if(file.isDirectory()) {
+                rootDirs.add(file);
+            }
         }
 
         options.put("host", host);
@@ -224,8 +209,22 @@ public class SimpleWebServer extends NanoHTTPD {
         return rootDirs;
     }
 
-    private void addWwwRootDir(File wwwroot) {
-        rootDirs.add(wwwroot);
+    public static void addWwwRootDir(String path) {
+        File file = new File(path).getAbsoluteFile();
+        if(file.isDirectory()) {
+            rootDirs.add(file);
+        }
+    }
+
+    public static void removeDir(String path) {
+        Iterator<File> paths = rootDirs.iterator();
+        while(paths.hasNext()) {
+            String p = paths.next().getAbsolutePath();
+            if(p.equals(path)) {
+                paths.remove();
+                break;
+            }
+        }
     }
 
     /**
@@ -291,19 +290,25 @@ public class SimpleWebServer extends NanoHTTPD {
             return getForbiddenResponse("Won't serve ../ for security reasons.");
         }
 
+        List<File> roots = getRootDirs();
+        //list root dirs
+        if(2 > uri.length()) {
+            return createResponse(Response.Status.OK, NanoHTTPD.MIME_HTML, listRootDirs(roots, uri));
+        }
+
         boolean canServeUri = false;
         File homeDir = null;
-        List<File> roots = getRootDirs();
+
         for (int i = 0; !canServeUri && i < roots.size(); i++) {
             homeDir = roots.get(i);
-            canServeUri = canServeUri(uri, homeDir);
+            canServeUri = canServeUri(uri);
         }
         if (!canServeUri) {
             return getNotFoundResponse();
         }
 
         // Browsers get confused without '/' after the directory, send a redirect.
-        File f = new File(homeDir, uri);
+        File f = new File(uri);
         if (f.isDirectory() && !uri.endsWith("/")) {
             uri += "/";
             Response res = createResponse(Response.Status.REDIRECT, NanoHTTPD.MIME_HTML, "<html><body>Redirected: <a href=\"" +
@@ -357,15 +362,15 @@ public class SimpleWebServer extends NanoHTTPD {
             "INTERNAL ERRROR: " + s);
     }
 
-    private boolean canServeUri(String uri, File homeDir) {
+    private boolean canServeUri(String uri) {
         boolean canServeUri;
-        File f = new File(homeDir, uri);
+        File f = new File(uri);
         canServeUri = f.exists();
         if (!canServeUri) {
             String mimeTypeForFile = getMimeTypeForFile(uri);
             WebServerPlugin plugin = mimeTypeHandlers.get(mimeTypeForFile);
             if (plugin != null) {
-                canServeUri = plugin.canServeUri(uri, homeDir);
+                canServeUri = plugin.canServeUri(uri);
             }
         }
         return canServeUri;
@@ -490,7 +495,14 @@ public class SimpleWebServer extends NanoHTTPD {
             "</head><body><h1>" + heading + "</h1>");
 
         String up = null;
-        if (uri.length() > 1) {
+        List<File> roots = getRootDirs();
+        for(File file : roots) {
+            String path = file.getAbsolutePath() + "/";
+            if(uri.equals(path)) {
+                up = "/";
+            }
+        }
+        if (up == null && uri.length() > 1) {
             String u = uri.substring(0, uri.length() - 1);
             int slash = u.lastIndexOf('/');
             if (slash >= 0 && slash < u.length()) {
@@ -547,5 +559,64 @@ public class SimpleWebServer extends NanoHTTPD {
         }
         msg.append("</body></html>");
         return msg.toString();
+    }
+
+    protected String listRootDirs(List<File> roots, String uri) {
+        String heading = "Directory " + uri;
+        StringBuilder msg = new StringBuilder("<html><head><title>" + heading + "</title><style><!--\n" +
+                "span.dirname { font-weight: bold; }\n" +
+                "span.filesize { font-size: 75%; }\n" +
+                "// -->\n" +
+                "</style>" +
+                "</head><body><h1>" + heading + "</h1>");
+
+        msg.append("<ul>");
+        msg.append("<section class=\"directories\">");
+
+        for (File directory : roots) {
+            String dir = directory.getAbsolutePath() + "/";
+            dir = dir.substring(1);
+            msg.append("<li><a rel=\"directory\" href=\"").append(encodeUri(uri + dir)).append("\"><span class=\"dirname\">").append(dir).append("</span></a></b></li>");
+        }
+        msg.append("</section>");
+        msg.append("</ul>");
+        msg.append("</body></html>");
+
+        return msg.toString();
+    }
+
+    public static String getIp(){
+        boolean get = false;
+        String ipAdd = null;
+        Enumeration<NetworkInterface> netInterfaces = null;
+        try {
+            netInterfaces = NetworkInterface.getNetworkInterfaces();
+            while (netInterfaces.hasMoreElements()) {
+                NetworkInterface ni = netInterfaces.nextElement();
+                Enumeration<InetAddress> ips = ni.getInetAddresses();
+                while (ips.hasMoreElements()) {
+                    String  strtemp = ips.nextElement().getHostAddress();
+
+                    if(isIp(strtemp) && !strtemp.equals("127.0.0.1")){
+                        ipAdd = strtemp;
+                        get = true;
+                        break;
+                    }
+                }
+                if(get)break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return ipAdd;
+    }
+
+    public static boolean isIp(String ipAddress)
+    {
+        String ip = "((2[0-4]\\d|25[0-5]|[01]?\\d\\d?)\\.){3}(2[0-4]\\d|25[0-5]|[01]?\\d\\d?)";
+        Pattern pattern = Pattern.compile(ip);
+        Matcher matcher = pattern.matcher(ipAddress);
+        return matcher.matches();
     }
 }

@@ -2,5 +2,9 @@
     {
         "merged": "F:\\lin\\DLNASampleWithCyberlink\\tabViewPagerIndicatorLibrary\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-hdpi-v4\\background_tab.xml",
         "source": "F:\\lin\\DLNASampleWithCyberlink\\tabViewPagerIndicatorLibrary\\build\\intermediates\\bundles\\debug\\res\\drawable-hdpi-v4\\background_tab.xml"
+    },
+    {
+        "merged": "F:\\GitHub\\DLNASampleWithCyberlink\\tabViewPagerIndicatorLibrary\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-hdpi-v4\\background_tab.xml",
+        "source": "F:\\GitHub\\DLNASampleWithCyberlink\\tabViewPagerIndicatorLibrary\\build\\intermediates\\bundles\\debug\\res\\drawable-hdpi-v4\\background_tab.xml"
     }
 ]

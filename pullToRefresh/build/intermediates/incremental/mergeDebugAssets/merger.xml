@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="F:\lin\DLNASampleWithCyberlink\pullToRefresh\src\main\assets"/><source path="F:\lin\DLNASampleWithCyberlink\pullToRefresh\build\generated\assets\shaders\debug"/></dataSet><dataSet config="debug"><source path="F:\lin\DLNASampleWithCyberlink\pullToRefresh\src\debug\assets"/></dataSet></merger>
+<merger version="3"><dataSet config="main"><source path="F:\GitHub\DLNASampleWithCyberlink\pullToRefresh\src\main\assets"/><source path="F:\GitHub\DLNASampleWithCyberlink\pullToRefresh\build\generated\assets\shaders\debug"/></dataSet><dataSet config="debug"><source path="F:\GitHub\DLNASampleWithCyberlink\pullToRefresh\src\debug\assets"/></dataSet></merger>

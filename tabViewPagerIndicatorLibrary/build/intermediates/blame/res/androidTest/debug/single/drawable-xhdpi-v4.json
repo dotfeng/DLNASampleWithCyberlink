@@ -1,5 +1,9 @@
 [
     {
+        "merged": "F:\\GitHub\\DLNASampleWithCyberlink\\tabViewPagerIndicatorLibrary\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-xhdpi-v4\\ic_launcher.png",
+        "source": "F:\\GitHub\\DLNASampleWithCyberlink\\tabViewPagerIndicatorLibrary\\build\\intermediates\\bundles\\debug\\res\\drawable-xhdpi-v4\\ic_launcher.png"
+    },
+    {
         "merged": "F:\\lin\\DLNASampleWithCyberlink\\tabViewPagerIndicatorLibrary\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-xhdpi-v4\\ic_launcher.png",
         "source": "F:\\lin\\DLNASampleWithCyberlink\\tabViewPagerIndicatorLibrary\\build\\intermediates\\bundles\\debug\\res\\drawable-xhdpi-v4\\ic_launcher.png"
     }
